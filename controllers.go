@@ -105,6 +105,14 @@ func imageHandler(w http.ResponseWriter, r *http.Request, buf []byte, operation 
 		return
 	}
 
+	// For SVG images, return the original without processing
+	if mimeType == "image/svg+xml" {
+		w.Header().Set("Content-Length", strconv.Itoa(len(buf)))
+		w.Header().Set("Content-Type", mimeType)
+		_, _ = w.Write(buf)
+		return
+	}
+
 	opts, err := buildParamsFromQuery(r.URL.Query())
 	if err != nil {
 		ErrorReply(r, w, NewError("Error while processing parameters, "+err.Error(), http.StatusBadRequest), o)
